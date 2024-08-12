@@ -1,0 +1,65 @@
+---
+title: Day 1 Tasks & Activities
+author: Matteo Torres
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Data import and exploration
+```{r}
+#| message: false
+# loading packages
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+# read csv file
+stl_lead<- read.csv(here::here("data", "stl_blood_lead.csv"))
+```
+
+```{r}
+# data exploration
+summary(stl_lead)
+skimr::skim(stl_lead)
+dim(stl_lead)
+names(stl_lead)
+```
+
+```{r}
+# create a new column (pop_white)
+stl_lead_prop<- stl_lead %>%
+  dplyr::mutate(prop_white= white/totalPop*100)
+```
+
+## Visualize data
+```{r}
+# create a scatterplot
+stl_lead_plot<- ggplot(data=stl_lead_prop, aes(x= pctElevated, y= prop_white)) +
+  geom_point(size= 1, alpha= 0.5, aes(color= pctElevated), show.legend= FALSE) +
+  scale_color_gradient(low= "black", high= "red") +
+  theme_classic() +
+  labs(title= "Elevated Blood Lead Levels vs. Percent of Each Census Tract as White", x= "Elevated Blood Levels", y= "% White")
+stl_lead_plot
+```
+
+```{r}
+# save plot
+ggsave(here::here("figs", "stl_lead_plot.png"), height = 5, width = 6)
+```
+
+```{r}
+# create a histogram
+histogram<- ggplot(data= stl_lead_prop, aes(x= pctElevated)) +
+  geom_histogram(fill= "green") +
+  theme_classic() +
+  labs(title= "Histogram of Elevated Blood Levels", x= "Elevated Blood Levels", y=" Frequency")
+histogram
+```
+
+```{r}
+# save plot
+ggsave(here::here("figs", "histogram.jpg"), height = 5, width = 6)
+```
+
